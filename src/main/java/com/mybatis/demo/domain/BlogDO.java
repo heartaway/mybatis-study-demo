@@ -1,10 +1,12 @@
-package com.mybatis.demo.basic.model;
+package com.mybatis.demo.domain;
+
+import java.io.Serializable;
 
 /**
  * @author: heartaway
  * @create: 2018-04-02 下午11:43
  */
-public class BlogDO {
+public class BlogDO implements Serializable {
 
     private String title;
 

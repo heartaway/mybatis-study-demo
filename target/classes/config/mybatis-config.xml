@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- properties 属性优先级：通过方法参数传递的属性具有最高优先级，resource/url 属性中指定的配置文件次之，最低优先级的是 properties 属性中指定的属性。 -->
+    <properties resource="config.properties">
+        <property name="username" value="mybatis"/>
+    </properties>
+
+    <!-- typeAlias 存在的意义仅在于用来减少类完全限定名的冗余， 但是在SQLMAP自动生成的情况下，冗余并不见得是坏事，它给类型重定义和定位带来了便捷 -->
+    <typeAliases>
+        <package name="com.mybatis.demo.domain"/>
+    </typeAliases>
+
+    <!-- 解决JDBC数据类型与Java类型的 转换 -->
+    <typeHandlers>
+        <!-- javaType / jdbcType 可以采用typeHandler的属性配置，也可采用MappedJdbcTypes注解；同时指定时前者优先级更高 -->
+        <typeHandler handler="com.mybatis.demo.config.MyTypeHandler" javaType="java.lang.String" jdbcType="VARCHAR"/>
+    </typeHandlers>
+
+    <plugins>
+        <plugin interceptor="com.mybatis.demo.config.plugins.MyExecutorQueryPlugin">
+
+        </plugin>
+        <plugin interceptor="com.mybatis.demo.config.plugins.MyExecutorUpdatePlugin">
+            <property name="someProperty" value="100"/>
+        </plugin>
+    </plugins>
+
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <databaseIdProvider type="DB_VENDOR">
+        <property name="Mysql" value="mysql"/>
+        <property name="SQL Server" value="sqlserver"/>
+        <property name="DB2" value="db2"/>
+        <property name="Oracle" value="oracle"/>
+    </databaseIdProvider>
+
+    <mappers>
+        <mapper resource="config/mapper/BlogMapper.xml"/>
+    </mappers>
+</configuration>

@@ -3,12 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <!-- properties 属性优先级：通过方法参数传递的属性具有最高优先级，resource/url 属性中指定的配置文件次之，最低优先级的是 properties 属性中指定的属性。
-     简单理解：就近原则
-    -->
+    <!-- properties 属性优先级：通过方法参数传递的属性具有最高优先级，resource/url 属性中指定的配置文件次之，最低优先级的是 properties 属性中指定的属性。 -->
     <properties resource="config.properties">
         <property name="username" value="mybatis"/>
     </properties>
+
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+        <setting name="localCacheScope" value="STATEMENT"/>
+    </settings>
 
     <environments default="development">
         <environment id="development">
@@ -23,6 +26,6 @@
     </environments>
 
     <mappers>
-        <mapper resource="basic/mapper/BlogMapper.xml"/>
+        <mapper resource="cache/mapper/BlogMapper.xml"/>
     </mappers>
 </configuration>

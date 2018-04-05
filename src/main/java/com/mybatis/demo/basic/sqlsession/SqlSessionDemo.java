@@ -1,14 +1,9 @@
 package com.mybatis.demo.basic.sqlsession;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import com.mybatis.demo.basic.model.BlogDO;
 import com.mybatis.demo.basic.model.BlogMapper;
-import org.apache.ibatis.io.Resources;
+import com.mybatis.demo.domain.BlogDO;
+import com.mybatis.demo.util.SqlSessionFactoryWapper;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -18,39 +13,11 @@ import org.junit.Test;
  */
 public class SqlSessionDemo {
 
-    private static SqlSessionFactory INSTANCE;
-
-    private Object lock = new Object();
-
-    public SqlSessionFactory getInstance() {
-        if (INSTANCE == null) {
-            synchronized (lock) {
-                if (INSTANCE == null) {
-                    INSTANCE = init();
-                }
-            }
-        }
-
-        return INSTANCE;
-    }
-
-    private SqlSessionFactory init() {
-        try {
-            String resource = "basic/mybatis-config.xml";
-            InputStream inputStream = Resources.getResourceAsStream(resource);
-            SqlSessionFactory sqlSessionFactory =
-                new SqlSessionFactoryBuilder().build(inputStream);
-            return sqlSessionFactory;
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
     @Test
     public void testGetSqlSession() {
-        SqlSession session = getInstance().openSession();
+        SqlSession session = SqlSessionFactoryWapper.getInstance().openSession();
         try {
-            BlogDO blogDO = session.selectOne("BlogMapper.selectBlogById", 1);
+            BlogDO blogDO = session.selectOne("com.mybatis.demo.basic.model.BlogMapper.selectBlogFromXml", 1);
             Assert.assertNotNull(blogDO);
         } catch (Exception e) {
             System.out.println(e);
@@ -60,18 +27,18 @@ public class SqlSessionDemo {
     }
 
     /**
-     * 需要手动注册 BlogMapper 到 mapperRegistry 中
+     * 优势:
+     * 1.不是基于字符串常量;
+     * 2.IDE中的方法自动提示;
+     * 学习：
+     * 配置接口化
      */
     @Test
     public void testGetSqlSession2() {
-        getInstance().getConfiguration().addMapper(BlogMapper.class);
-        SqlSession session = getInstance().openSession();
-        try {
+        try (SqlSession session = SqlSessionFactoryWapper.getInstance().openSession();) {
             BlogMapper blogMapper = session.getMapper(BlogMapper.class);
-            BlogDO blogDO = blogMapper.selectBlog(1L);
+            BlogDO blogDO = blogMapper.selectBlogFromAnnotaion(1L);
             Assert.assertNotNull(blogDO);
-        } finally {
-            session.close();
         }
     }
 }
